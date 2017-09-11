@@ -19,7 +19,7 @@ public class NetworkHangConfig extends AbstractConfig {
 
     public static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(SERVER_HOST, Type.STRING, "localhost", null, Importance.HIGH, "Host to write to that should hang")
-            .define(SERVER_PORT, Type.SHORT, 12341, null, Importance.HIGH, "Port to write to that should hang")
+            .define(SERVER_PORT, Type.INT, 12341, null, Importance.HIGH, "Port to write to that should hang")
             .define(NUM_WRITES, Type.INT, 8192, ConfigDef.Range.atLeast(0), Importance.MEDIUM, "Number of 1kb writes that will be attempted");
 
     public static ConfigDef getConfigDef() {
