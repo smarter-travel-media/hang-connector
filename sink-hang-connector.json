@@ -1,0 +1,11 @@
+{
+    "name": "sink-hang-connector",
+    "config": {
+        "connector.class": "com.smartertravel.kafka.demo.NetworkHangSinkConnector",
+        "tasks.max": 1,
+        "topics": "some_demo_topic",
+        "server.host": "localhost",
+        "server.port": "12341",
+        "num.writes": "65535"
+    }
+}
