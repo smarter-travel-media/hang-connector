@@ -10,8 +10,11 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
- *
- *
+ * Sink task that will block on a {@link CountDownLatch} in its {@link #put(Collection)}
+ * method and never unblock (unless the thread is interrupted).
+ * <p>
+ * This task behaves this way to demonstrate how Kafka Connect workers can be put into
+ * an invalid state by buggy or badly behaved Connectors / Tasks.
  */
 public class LatchHangSinkTask extends SinkTask {
 
