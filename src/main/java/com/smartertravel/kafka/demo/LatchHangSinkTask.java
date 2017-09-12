@@ -20,12 +20,12 @@ public class LatchHangSinkTask extends SinkTask {
 
     @Override
     public String version() {
-        return null;
+        return "1.0.0-demo-task";
     }
 
     @Override
     public void start(Map<String, String> config) {
-        LOGGER.info("Setting up a countdown latch to block forever");
+        LOGGER.info("Setting up a countdown latch to block forever in {}", Thread.currentThread().getName());
         this.latch = new CountDownLatch(1);
     }
 
@@ -33,18 +33,20 @@ public class LatchHangSinkTask extends SinkTask {
     public void put(Collection<SinkRecord> collection) {
         final Thread t = Thread.currentThread();
         LOGGER.info("Starting to block on countdown latch in {}", t.getName());
+
         try {
             this.latch.await();
         } catch (InterruptedException e) {
             LOGGER.info("Interrupted while waiting for countdown latch: {}", e.getMessage());
         }
+
         LOGGER.info("Finished waiting for countdown latch in {}", t.getName());
     }
 
     @Override
     public void stop() {
         LOGGER.info(""
-                + "Stop method for NetworkHangSinkTask called from {} but we won't stop the "
+                + "Stop method for LatchHangSinkTask called from {} but we won't stop the "
                 + "latch because we are evil", Thread.currentThread().getName());
     }
 }

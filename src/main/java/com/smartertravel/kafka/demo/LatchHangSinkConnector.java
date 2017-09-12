@@ -23,12 +23,12 @@ public class LatchHangSinkConnector extends SinkConnector {
 
     @Override
     public String version() {
-        return "demo";
+        return "1.0.0-demo-connector";
     }
 
     @Override
     public void start(Map<String, String> config) {
-        LOGGER.info("Starting NetworkHangSinkConnector connector");
+        LOGGER.info("Starting LatchHangSinkConnector connector in {}", Thread.currentThread().getName());
         this.taskConfigs = Collections.unmodifiableMap(new HashMap<>(config));
     }
 
@@ -49,7 +49,7 @@ public class LatchHangSinkConnector extends SinkConnector {
 
     @Override
     public void stop() {
-        LOGGER.info("Stopping NetworkHangSinkConnector connector");
+        LOGGER.info("Stopping LatchHangSinkConnector connector in {}", Thread.currentThread().getName());
     }
 
     @Override
