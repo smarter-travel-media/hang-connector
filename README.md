@@ -51,12 +51,12 @@ CLASSPATH=~/.m2/repository/com/smartertravel/kafka/hang-connector/1.0.0-SNAPSHOT
 
 ## Distributed Kafka Connect
 
-Edit the file `connect-distributed.properties` in the `hang-connector` project. Change the setting 
+Edit the file `connect-distributed-1.properties` in the `hang-connector` project. Change the setting 
 `bootstrap.servers` to be a server(s) in your Kafka cluster.
 
 ```bash
 cd $HOME/projects
-emacs hang-connector/connect-distributed.properties 
+emacs hang-connector/connect-distributed-1.properties 
 ```
 
 Create the required topics to be using by the distributed Kafka Connect worker. Substitute the host name below
@@ -73,7 +73,7 @@ Start the distributed Kafka Connect worker.
 
 ```bash
 cd $HOME/projects/kafka
-CLASSPATH=~/.m2/repository/com/smartertravel/kafka/hang-connector/1.0.0-SNAPSHOT/* ./bin/connect-distributed.sh ../hang-connector/connect-distributed.properties
+CLASSPATH=~/.m2/repository/com/smartertravel/kafka/hang-connector/1.0.0-SNAPSHOT/* ./bin/connect-distributed.sh ../hang-connector/connect-distributed-1.properties
 ```
 
 
