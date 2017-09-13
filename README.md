@@ -105,5 +105,38 @@ Note that `pool-1-thread-1` is blocked on a `CountdownLatch`.
 curl -X POST 'http://localhost:8083/connectors/sink-hang-connector/tasks/0/restart'
 ```
 
-The results of trying to restart the badly behaved connector depend on if you are running stand-alone mode or
-distributed mode.
+After the restart you'll see something like this in the logs indicating that the running task couldn't be stopped
+but a new one was created anyway.
+
+```bash
+[2017-09-13 16:08:47,935] INFO Stopping task sink-hang-connector-0 (org.apache.kafka.connect.runtime.Worker:447)
+[2017-09-13 16:08:52,936] ERROR Graceful stop of task sink-hang-connector-0 failed. (org.apache.kafka.connect.runtime.Worker:476)
+[2017-09-13 16:08:52,936] INFO Starting task sink-hang-connector-0 (org.apache.kafka.connect.runtime.distributed.DistributedHerder:829)
+[2017-09-13 16:08:52,936] INFO Creating task sink-hang-connector-0 (org.apache.kafka.connect.runtime.Worker:358)
+```
+
+After this, you can see (again, using VisualVM) that there are now two threads blocked running the task from the
+`hang-connector` despite Kafka Connect only running a single task.
+
+![two blocked worker threads](two_blocked_threads.png "Two Blocked Worker Threads")
+
+Note Kafka Connect is only supposed to be running a single task (in a single thread).
+
+```bash
+curl 'http://localhost:8083/connectors/sink-hang-connector' 2>/dev/null | jq .
+{
+  "name": "sink-hang-connector",
+  "config": {
+    "connector.class": "com.smartertravel.kafka.demo.LatchHangSinkConnector",
+    "tasks.max": "1",
+    "topics": "some_demo_topic",
+    "name": "sink-hang-connector"
+  },
+  "tasks": [
+    {
+      "connector": "sink-hang-connector",
+      "task": 0
+    }
+  ]
+}
+```
