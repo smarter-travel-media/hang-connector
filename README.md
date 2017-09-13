@@ -140,3 +140,48 @@ curl 'http://localhost:8083/connectors/sink-hang-connector' 2>/dev/null | jq .
   ]
 }
 ```
+
+## Results
+
+As shown above:
+
+* Tasks are asked nicely to stop via setting a `stopping` flag.
+* They are *not forced* to stop via something like `Future.cancel(true)`.
+* Every time a badly behaved task is restarted, another thread that will spin forever is created.
+
+I think this constitutes a bug because:
+
+* While people shouldn't be running malicious connectors, they often run connectors developed by third parties.
+* A single bug in one of these third party connectors (waiting on a lock, doing blocking I/O without timeouts) can
+  put the Kafka Connect application into a invalid state (multiple threads running for a single task).
+
+I originally started investigating this bug because I ran into a situation identical to this problem on
+[Stack Overflow](https://stackoverflow.com/questions/43802156/inconsistent-connector-state-connectexception-task-already-exists-in-this-work)
+in our production environment following a network outage (though I was not able to reproduce it exactly).
+
+## Solution
+
+In order to prevent blocked threads from running indefinitely I think they should be interrupted as a last resort
+in the method `Worker::awaitStopTask(ConnectorTaskId taskId, long timeout)`. That method might be changed to look
+like this:
+
+```java
+private void awaitStopTask(ConnectorTaskId taskId, long timeout) {
+    WorkerTask task = tasks.remove(taskId);
+    Future<?> taskThread = threads.remove(taskId);
+    if (task == null) {
+        log.warn("Ignoring await stop request for non-present task {}", taskId);
+        return;
+    }
+
+    if (!task.awaitStop(timeout)) {
+        log.error("Graceful stop of task {} failed.", task.id());
+        task.cancel();
+            
+        taskThread.cancel(true);
+    }
+}
+```
+
+A more complete version of this change can be found here: https://github.com/smarter-travel-media/kafka/commit/295c747a9fd82ee8b30556c89c31e0bfcce5a2c5
+
