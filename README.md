@@ -84,8 +84,26 @@ cd $HOME/projects/hang-connector
 curl -H 'Content-Type: application/json' -X POST --data @'sink-hang-connector.json' http://localhost:8083/connectors
 ```
 
+## Observe The Hanging Connector
+
+In both cases above (stand-alone and distributed) you should have seen message in the logs from the `hang-connector`
+indicating that it was going to start blocking indefinitely.
+
+```bash
+[2017-09-13 11:01:54,624] INFO Starting to block on countdown latch in pool-1-thread-1 (com.smartertravel.kafka.demo.LatchHangSinkTask:38)
+```
+
+You can also confirm this by inspecting the Kafka Connect JVM in a tool like VisualVM.
+ 
+![blocked worker thread](blocked_thread.png "Blocked Worker Thread")
+
+Note that `pool-1-thread-1` is blocked on a `CountdownLatch`.
+
 ## Try Restarting The Badly Behaved Connector
 
 ```bash
 curl -X POST 'http://localhost:8083/connectors/sink-hang-connector/tasks/0/restart'
 ```
+
+The results of trying to restart the badly behaved connector depend on if you are running stand-alone mode or
+distributed mode.
