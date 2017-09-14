@@ -159,7 +159,7 @@ I originally started investigating this bug because I ran into a situation ident
 [Stack Overflow](https://stackoverflow.com/questions/43802156/inconsistent-connector-state-connectexception-task-already-exists-in-this-work)
 in our production environment following a network outage (though I was not able to reproduce it exactly).
 
-## Solution
+## Potential Solution
 
 In order to prevent blocked threads from running indefinitely I think they should be interrupted as a last resort
 in the method `Worker::awaitStopTask(ConnectorTaskId taskId, long timeout)`. That method might be changed to look
