@@ -59,7 +59,7 @@ cd $HOME/projects
 emacs hang-connector/connect-distributed-1.properties 
 ```
 
-Create the required topics to be using by the distributed Kafka Connect worker. Substitute the host name below
+Create the required topics to be used by the distributed Kafka Connect worker. Substitute the host name below
 with the host name of a server in your Kafka cluster.
 
 ```bash
